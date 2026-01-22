@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benkar BBQ - Interactive Menu</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Lato', sans-serif;
+            color: #111;
+            scroll-behavior: smooth;
+        }
+
+        /* =========================================
+           SECTION 1: HERO / POSTER
+           ========================================= */
+        #hero {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #fff;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .btn-menu {
+            padding: 15px 40px;
+            background-color: #d4a855;
+            color: #000;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-menu:hover {
+            background-color: #fff;
+            transform: translateY(-3px);
+        }
+
+        /* =========================================
+           SECTION 2: 3D MENU
+           ========================================= */
+        #menu {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background-color: #f7f7f5;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .menu-header {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            z-index: 10;
+            color: #111;
+        }
+
+        .slide-content {
+            position: absolute;
+            top: 25%;
+            left: 8%;
+            width: 30%;
+            max-width: 450px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease, transform 0.8s ease-out;
+            pointer-events: auto;
+        }
+
+        .slide-content.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dish-title {
+            font-family: 'Playfair Display', serif;
+            font-weight: 400;
+            font-style: italic;
+            font-size: 4rem;
+            margin: 0 0 1.5rem 0;
+            line-height: 1;
+            color: #0d0d0d;
+        }
+
+        .dish-price {
+            font-size: 1.5rem;
+            font-family: 'Playfair Display', serif;
+            color: #d4a855;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .dish-desc {
+            font-size: 1.05rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 3rem;
+            text-align: justify;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            row-gap: 0.8rem;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 1.5rem;
+        }
+
+        .meta-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #888;
+            align-self: center;
+        }
+
+        .meta-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-style: italic;
+            color: #222;
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #aaa;
+        }
+
+        /* =========================================
+           SECTION 3: FOOTER
+           ========================================= */
+        #footer {
+            background-color: #111;
+            color: #fff;
+            padding: 80px 50px;
+            text-align: center;
+        }
+
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #d4a855;
+        }
+
+        .footer-links {
+            margin-bottom: 40px;
+        }
+
+        .footer-links a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 15px;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: #d4a855;
+        }
+
+        .footer-copy {
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+    <style>
+        /* =========================================
+           RESPONSIVE
+           ========================================= */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+                letter-spacing: 3px;
+            }
+
+            .slide-content {
+                width: 85%;
+                left: 7.5%;
+                top: 20%;
+                max-width: none;
+            }
+
+            .dish-title {
+                font-size: 3rem;
+            }
+
+            .dish-desc {
+                font-size: 0.95rem;
+                margin-bottom: 2rem;
+                /* Add a subtle background to improve readability over 3D model if needed */
+                text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
+            }
+
+            .menu-header {
+                font-size: 0.8rem;
+                left: 20px;
+                top: 20px;
+            }
+
+            .scroll-hint {
+                left: 20px;
+                bottom: 20px;
+            }
+
+            #footer {
+                padding: 50px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SECTION 1: HERO -->
+    <section id="hero">
+        <div class="hero-subtitle">Welcome to</div>
+        <h1 class="hero-title">Benkar BBQ</h1>
+        <a href="#menu" class="btn-menu">View Menu</a>
+    </section>
+
+    <!-- SECTION 2: 3D MENU -->
+    <section id="menu">
+        <div class="menu-header">SIGNATURE DISHES</div>
+
+        <div id="canvas-container"></div>
+
+        <div id="ui-layer">
+
+            <!-- Dish 1 -->
+            <div class="slide-content" id="slide-0">
+                <span class="dish-price">$24.00</span>
+                <h2 class="dish-title">The Classic <br>Burger</h2>
+                <div class="dish-desc">
+                    A timeless favorite featuring a juicy, flame-grilled beef patty topped with fresh lettuce, ripe
+                    tomatoes, and our secret house sauce. Served on a toasted brioche bun.
+                </div>
+                <div class="meta-grid">
+                    <span class="meta-label">Chef</span> <span class="meta-value">Marco Pierre</span>
+                    <span class="meta-label">Type</span> <span class="meta-value">Beef</span>
+                    <span class="meta-label">Calories</span> <span class="meta-value">850 kcal</span>
+                </div>
+            </div>
+
+            <!-- Dish 2 -->
+            <div class="slide-content" id="slide-1">
+                <span class="dish-price">$32.00</span>
+                <h2 class="dish-title">Premium <br>Steak</h2>
+                <div class="dish-desc">
+                    Hand-selected prime cut, dry-aged for 28 days to ensure maximum tenderness and flavor. Grilled to
+                    your perfection and served with roasted garlic butter.
+                </div>
+                <div class="meta-grid">
+                    <span class="meta-label">Chef</span> <span class="meta-value">Elena Varas</span>
+                    <span class="meta-label">Type</span> <span class="meta-value">Ribeye</span>
+                    <span class="meta-label">Calories</span> <span class="meta-value">920 kcal</span>
+                </div>
+            </div>
+
+            <!-- Dish 3 -->
+            <div class="slide-content" id="slide-2">
+                <span class="dish-price">$18.00</span>
+                <h2 class="dish-title">Artisan <br>Pizza</h2>
+                <div class="dish-desc">
+                    Wood-fired perfection with a thin, crispy crust. Topped with San Marzano tomato sauce, fresh buffalo
+                    mozzarella, and basil leaves harvested from our garden.
+                </div>
+                <div class="meta-grid">
+                    <span class="meta-label">Chef</span> <span class="meta-value">Giovanni Rossi</span>
+                    <span class="meta-label">Type</span> <span class="meta-value">Vegetarian</span>
+                    <span class="meta-label">Calories</span> <span class="meta-value">780 kcal</span>
+                </div>
+            </div>
+
+            <!-- Dish 4 -->
+            <div class="slide-content" id="slide-3">
+                <span class="dish-price">$22.00</span>
+                <h2 class="dish-title">Truffle <br>Pasta</h2>
+                <div class="dish-desc">
+                    Handmade tagliatelle tossed in a rich, creamy truffle sauce. Finished with shaved black truffles and
+                    aged parmesan cheese for an unforgettable earthy flavor.
+                </div>
+                <div class="meta-grid">
+                    <span class="meta-label">Chef</span> <span class="meta-value">Sofia Loren</span>
+                    <span class="meta-label">Type</span> <span class="meta-value">Pasta</span>
+                    <span class="meta-label">Calories</span> <span class="meta-value">650 kcal</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="scroll-hint">Scroll to explore menu</div>
+    </section>
+
+    <!-- SECTION 3: FOOTER -->
+    <section id="footer">
+        <div class="footer-logo">BENKAR BBQ</div>
+        <div class="footer-links">
+            <a href="#">Home</a>
+            <a href="#">Menu</a>
+            <a href="#">Reservations</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="footer-copy">
+            &copy; 2024 Benkar BBQ. All rights reserved. <br>
+            123 BBQ Street, Food District, NY
+        </div>
+    </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        const CONFIG = {
+            slideCount: 4,
+            spacingX: 45,
+            pWidth: 14,
+            pHeight: 18,
+            camZ: 30,
+            wallAngleY: -0.25,
+            snapDelay: 200,
+            lerpSpeed: 0.06
+        };
+
+        const totalGalleryWidth = CONFIG.slideCount * CONFIG.spacingX;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf7f7f5);
+        scene.fog = new THREE.Fog(0xf7f7f5, 10, 110);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0, CONFIG.camZ);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambient);
+
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        dirLight.position.set(10, 20, 10);
+        scene.add(dirLight);
+
+        const galleryGroup = new THREE.Group();
+        scene.add(galleryGroup);
+
+        const textureLoader = new THREE.TextureLoader();
+        const planeGeo = new THREE.PlaneGeometry(CONFIG.pWidth, CONFIG.pHeight);
+
+        // Food Images
+        const images = [
+            'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80', // Burger
+            'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80', // Steak
+            'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80', // Pizza
+            'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&q=80'  // Pasta
+        ];
+
+        const paintingGroups = [];
+
+        for (let i = 0; i < CONFIG.slideCount; i++) {
+            const group = new THREE.Group();
+            group.position.set(i * CONFIG.spacingX, 0, 0);
+            const mat = new THREE.MeshBasicMaterial({ map: textureLoader.load(images[i]) });
+            const mesh = new THREE.Mesh(planeGeo, mat);
+            const edges = new THREE.EdgesGeometry(planeGeo);
+            const outline = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x222222 }));
+
+            const shadowGeo = new THREE.PlaneGeometry(CONFIG.pWidth, CONFIG.pHeight);
+            const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.15 });
+            const shadow = new THREE.Mesh(shadowGeo, shadowMat);
+            shadow.position.set(0.8, -0.8, -0.5);
+
+            const lineZ = -1;
+            const lineLen = CONFIG.spacingX;
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(-lineLen / 2, 14, lineZ), new THREE.Vector3(lineLen / 2, 14, lineZ),
+                new THREE.Vector3(-lineLen / 2, -14, lineZ), new THREE.Vector3(lineLen / 2, -14, lineZ)
+            ]);
+            const lines = new THREE.LineSegments(lineGeo, new THREE.LineBasicMaterial({ color: 0xdddddd }));
+
+            group.add(shadow);
+            group.add(mesh);
+            group.add(outline);
+            group.add(lines);
+
+            galleryGroup.add(group);
+            paintingGroups.push(group);
+        }
+
+        galleryGroup.rotation.y = CONFIG.wallAngleY;
+        galleryGroup.position.x = 8;
+
+        let currentScroll = 0;
+        let targetScroll = 0;
+        let snapTimer = null;
+        let mouse = { x: 0, y: 0 };
+
+        function snapToNearest() {
+            const index = Math.round(targetScroll / CONFIG.spacingX);
+            targetScroll = index * CONFIG.spacingX;
+        }
+
+        // Only scroll the gallery when mouse is over the menu section
+        const menuSection = document.getElementById('menu');
+
+        menuSection.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            targetScroll += e.deltaY * 0.1;
+            if (snapTimer) clearTimeout(snapTimer);
+            snapTimer = setTimeout(snapToNearest, CONFIG.snapDelay);
+        }, { passive: false });
+
+        let touchStart = 0;
+        menuSection.addEventListener('touchstart', e => {
+            touchStart = e.touches[0].clientX;
+            if (snapTimer) clearTimeout(snapTimer);
+        });
+
+        menuSection.addEventListener('touchmove', e => {
+            const diff = touchStart - e.touches[0].clientX;
+            targetScroll += diff * 0.6;
+            touchStart = e.touches[0].clientX;
+            if (snapTimer) clearTimeout(snapTimer);
+        });
+
+        menuSection.addEventListener('touchend', () => {
+            snapToNearest();
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        function updateUI(scrollX) {
+            const rawIndex = Math.round(scrollX / CONFIG.spacingX);
+            const safeIndex = ((rawIndex % CONFIG.slideCount) + CONFIG.slideCount) % CONFIG.slideCount;
+            for (let i = 0; i < CONFIG.slideCount; i++) {
+                const el = document.getElementById(`slide-${i}`);
+                if (el) {
+                    if (i === safeIndex) el.classList.add('active');
+                    else el.classList.remove('active');
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            currentScroll += (targetScroll - currentScroll) * CONFIG.lerpSpeed;
+            const xMove = currentScroll * Math.cos(CONFIG.wallAngleY);
+            const zMove = currentScroll * Math.sin(CONFIG.wallAngleY);
+            camera.position.x = xMove;
+            camera.position.z = CONFIG.camZ - zMove;
+            paintingGroups.forEach((group, i) => {
+                const originalX = i * CONFIG.spacingX;
+                const distFromCam = currentScroll - originalX;
+                const shift = Math.round(distFromCam / totalGalleryWidth) * totalGalleryWidth;
+                group.position.x = originalX + shift;
+            });
+            camera.rotation.x = mouse.y * 0.05;
+            camera.rotation.y = -mouse.x * 0.05;
+            updateUI(currentScroll);
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Raycaster for click detection
+        const raycaster = new THREE.Raycaster();
+        const clickMouse = new THREE.Vector2();
+
+        window.addEventListener('click', (event) => {
+            clickMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            clickMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(clickMouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            if (intersects.length > 0) {
+                let object = intersects[0].object;
+                while (object.parent && object.parent !== scene) {
+                    const index = paintingGroups.indexOf(object.parent);
+                    if (index !== -1) {
+                        window.location.href = `dish_detail.html?id=${index}`;
+                        return;
+                    }
+                    object = object.parent;
+                }
+            }
+        });
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            // Cursor pointer logic
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+            let hovering = false;
+            if (intersects.length > 0) {
+                let object = intersects[0].object;
+                while (object.parent && object.parent !== scene) {
+                    if (paintingGroups.indexOf(object.parent) !== -1) {
+                        hovering = true;
+                        break;
+                    }
+                    object = object.parent;
+                }
+            }
+            document.body.style.cursor = hovering ? 'pointer' : 'default';
+        });
+
+        animate();
+
+    </script>
+</body>
+
+</html>

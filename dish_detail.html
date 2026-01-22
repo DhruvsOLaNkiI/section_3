@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dish Details - Benkar BBQ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f7f7f5;
+            color: #111;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 40px;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #d4a855;
+        }
+
+        .back-btn::before {
+            content: '←';
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .dish-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .dish-image-container {
+            position: relative;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .dish-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .dish-image:hover {
+            transform: scale(1.03);
+        }
+
+        .dish-info {
+            padding: 20px;
+        }
+
+        .dish-price {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: #d4a855;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+
+        .dish-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            line-height: 1.1;
+            color: #0d0d0d;
+            margin-bottom: 30px;
+        }
+
+        .dish-desc {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 40px;
+        }
+
+        .meta-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 30px;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .meta-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .meta-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            color: #222;
+        }
+
+        @media (max-width: 768px) {
+            .dish-layout {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .dish-title {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="restaurant_landing.html#menu" class="back-btn">Back to Menu</a>
+
+        <div class="dish-layout" id="content-area">
+            <!-- Content will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        // Data mirroring the landing page
+        const DISHES = [
+            {
+                id: 0,
+                title: "The Classic Burger",
+                price: "$24.00",
+                desc: "A timeless favorite featuring a juicy, flame-grilled beef patty topped with fresh lettuce, ripe tomatoes, and our secret house sauce. Served on a toasted brioche bun.",
+                image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=800&q=80",
+                chef: "Marco Pierre",
+                type: "Beef",
+                calories: "850 kcal",
+                prepTime: "15 mins"
+            },
+            {
+                id: 1,
+                title: "Premium Steak",
+                price: "$32.00",
+                desc: "Hand-selected prime cut, dry-aged for 28 days to ensure maximum tenderness and flavor. Grilled to your perfection and served with roasted garlic butter.",
+                image: "https://images.unsplash.com/photo-1600891964092-4316c288032e?w=800&q=80",
+                chef: "Elena Varas",
+                type: "Ribeye",
+                calories: "920 kcal",
+                prepTime: "25 mins"
+            },
+            {
+                id: 2,
+                title: "Artisan Pizza",
+                price: "$18.00",
+                desc: "Wood-fired perfection with a thin, crispy crust. Topped with San Marzano tomato sauce, fresh buffalo mozzarella, and basil leaves harvested from our garden.",
+                image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&q=80",
+                chef: "Giovanni Rossi",
+                type: "Vegetarian",
+                calories: "780 kcal",
+                prepTime: "12 mins"
+            },
+            {
+                id: 3,
+                title: "Truffle Pasta",
+                price: "$22.00",
+                desc: "Handmade tagliatelle tossed in a rich, creamy truffle sauce. Finished with shaved black truffles and aged parmesan cheese for an unforgettable earthy flavor.",
+                image: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=800&q=80",
+                chef: "Sofia Loren",
+                type: "Pasta",
+                calories: "650 kcal",
+                prepTime: "18 mins"
+            }
+        ];
+
+        // Get ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const dishId = parseInt(urlParams.get('id'));
+
+        const dish = DISHES.find(d => d.id === dishId) || DISHES[0]; // Default to first if not found
+
+        const contentArea = document.getElementById('content-area');
+        contentArea.innerHTML = `
+            <div class="dish-image-container">
+                <img src="${dish.image}" alt="${dish.title}" class="dish-image">
+            </div>
+            <div class="dish-info">
+                <span class="dish-price">${dish.price}</span>
+                <h1 class="dish-title">${dish.title}</h1>
+                <p class="dish-desc">${dish.desc}</p>
+                
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Chef</span>
+                        <span class="meta-value">${dish.chef}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Type</span>
+                        <span class="meta-value">${dish.type}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Calories</span>
+                        <span class="meta-value">${dish.calories}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Prep Time</span>
+                        <span class="meta-value">${dish.prepTime}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    </script>
+</body>
+
+</html>
